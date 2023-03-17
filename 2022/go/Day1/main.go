@@ -46,6 +46,8 @@ func Part1(filename string) int {
         }
     }
 
+    file.Close()
+
     return mostCalories 
 }
 
@@ -73,6 +75,8 @@ func Part2(filename string) int {
             cal += calories
         }
     }
+
+    file.Close()
 
     sort.Slice(calories, func(i, j int) bool {
         return calories[i] > calories[j]
