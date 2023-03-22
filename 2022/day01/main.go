@@ -1,91 +1,87 @@
 package main
 
 import (
-    "bufio"
-    "fmt"
-    "os"
-    "sort"
-    "strconv"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
-    fmt.Println("Day1 Solution")
+    fmt.Print("Advent of Code 2022 - Day1\n\n")
 
-    if os.Args[1:] != nil {
-        solution := Part2(os.Args[1])
-        fmt.Fprintf(os.Stdout, "Solution: %d", solution)
+    if len(os.Args) > 1 {
+        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(os.Args[1]))
+
+        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(os.Args[1]))
     } else {
-        fmt.Fprintf(os.Stderr, "Filename not provided")
+        fmt.Fprintf(os.Stderr, "Input file not provided")
     }
+}
+
+func readInput(filename string) string {
+    fileContentByteSlice, err := os.ReadFile(filename)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Unable to read file named %s", filename)
+        os.Exit(-1)
+    }
+
+    return string(fileContentByteSlice)
 }
 
 func Part1(filename string) int {
-    file, err := os.Open(filename)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "File not found")
-        return -1
-    }
+    fileContent := readInput(filename)
+    result := 0
 
-    scan := bufio.NewScanner(file)
+    for _, caloriesByElf := range strings.Split(fileContent, "\n\n") {
+        sumOfElfCalories := 0
 
-    var mostCalories = 0
-    var currentCalories = 0
-
-    for scan.Scan() {
-        if scan.Text() == "" {
-            if currentCalories > mostCalories {
-                mostCalories = currentCalories
-            }        
-            currentCalories = 0
-        } else {
-            calories, err := strconv.Atoi(scan.Text())
+        for _, calories := range strings.Fields(caloriesByElf) {
+            temp, err := strconv.Atoi(calories)
             if err != nil {
-                fmt.Fprintf(os.Stderr, "Invalid calories value")
+                fmt.Fprintf(os.Stderr, "Unable to convert %s to int", calories)
+                os.Exit(-1)
             }
-            currentCalories += calories
+            sumOfElfCalories += temp
+        }
+
+        if sumOfElfCalories > result {
+            result = sumOfElfCalories
         }
     }
 
-    file.Close()
-
-    return mostCalories 
+    return result 
 }
 
 func Part2(filename string) int {
-    file, err := os.Open(filename)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "File not found")
-        return -1
-    }
+    fileContent := readInput(filename)
+    result := 0
 
-    scan := bufio.NewScanner(file)
+    sumOfCaloriesForAllElves := []int{}
 
-    calories := []int{}
-    cal := 0
+    for _, caloriesByElf := range strings.Split(fileContent, "\n\n") {
+        sumOfElfCalories := 0
 
-    for scan.Scan() {
-        if scan.Text() == "" {
-            calories = append(calories, cal)
-            cal = 0
-        } else {
-            calories, err := strconv.Atoi(scan.Text())
+        for _, calories := range strings.Fields(caloriesByElf) {
+            temp, err := strconv.Atoi(calories)
             if err != nil {
-                fmt.Fprintf(os.Stderr, "Invalid calories value")
+                fmt.Fprintf(os.Stderr, "Unable to convert %s to int", calories)
+                os.Exit(-1)
             }
-            cal += calories
+            sumOfElfCalories += temp
         }
+
+        sumOfCaloriesForAllElves = append(sumOfCaloriesForAllElves, sumOfElfCalories) 
     }
 
-    file.Close()
-
-    sort.Slice(calories, func(i, j int) bool {
-        return calories[i] > calories[j]
+    sort.Slice(sumOfCaloriesForAllElves, func(i, j int) bool {
+        return sumOfCaloriesForAllElves[i] > sumOfCaloriesForAllElves[j]
     })
 
-    solution := 0
-    for _, value := range calories[:3] {
-        solution += value
+    for _, value := range sumOfCaloriesForAllElves[:3] {
+        result += value
     }
 
-    return solution
+    return result 
 }
