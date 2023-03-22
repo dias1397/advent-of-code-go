@@ -1,40 +1,46 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
 )
 
 func main() {
+    fmt.Print("Advent of Code 2022 - Day1\n\n")
+
     if len(os.Args) > 1 {
-        solution := Part2(os.Args[1])
-        fmt.Fprintf(os.Stdout, "%d", solution)
+        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(os.Args[1]))
+
+        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(os.Args[1]))
+    } else {
+        fmt.Fprintf(os.Stderr, "Input file not provided")
     }
 }
 
-func Part1(filename string) int {
-    file, err := os.Open(filename)
-    
+func readInput(filename string) string {
+    fileContentByteSlice, err := os.ReadFile(filename)
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Unable to open file")
+        fmt.Fprintf(os.Stderr, "Unable to read file named %s", filename)
+        os.Exit(-1)
     }
 
-    defer file.Close()
+    return string(fileContentByteSlice)
+}
 
-    scan := bufio.NewScanner(file)
-
+func Part1(filename string) int {
+    fileContent := readInput(filename)
     result := 0
+
     scores := map[string]int{"X": 1, "Y": 2, "Z": 3, 
                              "A": 1, "B": 2, "C": 3}
 
-    for scan.Scan() {
-        if scan.Text() == "" {
+    for _, line := range strings.Split(fileContent, "\n") {
+        if line == "" {
             continue
         }
 
-        round := strings.Fields(scan.Text())
+        round := strings.Fields(line) 
         result += scores[round[1]]
 
         switch (scores[round[1]] - scores[round[0]] + 3) % 3 {
@@ -49,30 +55,21 @@ func Part1(filename string) int {
 }
 
 func Part2(filename string) int {
-    file, err := os.Open(filename)
-    
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Unable to open file")
-    }
-
-    defer file.Close()
-
-    scan := bufio.NewScanner(file)
-    
+    fileContent := readInput(filename)
     result := 0
+
     scores := map[string]int{"X": 0, "Y": 3, "Z": 6, 
                              "A": 1, "B": 2, "C": 3}
 
-    for scan.Scan() {
-        if scan.Text() == "" {
+    for _, line := range strings.Split(fileContent, "\n") {
+        if line == "" {
             continue
         }
 
-        round := strings.Fields(scan.Text())
+        round := strings.Fields(line) 
         result += scores[round[1]]
 
         var temp int
-
         switch round[1] {
             case "X":
                 temp = (scores[round[0]] - 1) % 3 
