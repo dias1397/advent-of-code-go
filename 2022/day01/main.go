@@ -12,9 +12,10 @@ func main() {
     fmt.Print("Advent of Code 2022 - Day1\n\n")
 
     if len(os.Args) > 1 {
-        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(os.Args[1]))
+        input := readInput(os.Args[1])
+        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(input))
 
-        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(os.Args[1]))
+        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(input))
     } else {
         fmt.Fprintf(os.Stderr, "Input file not provided")
     }
@@ -30,11 +31,10 @@ func readInput(filename string) string {
     return string(fileContentByteSlice)
 }
 
-func Part1(filename string) int {
-    fileContent := readInput(filename)
+func Part1(input string) int {
     result := 0
 
-    for _, caloriesByElf := range strings.Split(fileContent, "\n\n") {
+    for _, caloriesByElf := range strings.Split(input, "\n\n") {
         sumOfElfCalories := 0
 
         for _, calories := range strings.Fields(caloriesByElf) {
@@ -54,13 +54,12 @@ func Part1(filename string) int {
     return result 
 }
 
-func Part2(filename string) int {
-    fileContent := readInput(filename)
+func Part2(input string) int {
     result := 0
 
     sumOfCaloriesForAllElves := []int{}
 
-    for _, caloriesByElf := range strings.Split(fileContent, "\n\n") {
+    for _, caloriesByElf := range strings.Split(input, "\n\n") {
         sumOfElfCalories := 0
 
         for _, calories := range strings.Fields(caloriesByElf) {
