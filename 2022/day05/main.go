@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -30,7 +31,7 @@ func main() {
     if len(os.Args) > 1 {
         fmt.Fprintf(os.Stdout, "Part 1 solution: %s\n", Part1(os.Args[1]))
 
-        fmt.Fprintf(os.Stdout, "Part 2 solution: %d\n", Part2(os.Args[1]))
+        fmt.Fprintf(os.Stdout, "Part 2 solution: %s\n", Part2(os.Args[1]))
     } else {
         fmt.Fprintf(os.Stderr, "Input file not provided") 
     }
@@ -53,8 +54,10 @@ func Part1(filename string) string {
     lines := strings.Split(parts[0], "\n")
     lines = lines[:len(lines)-1]
 
-    // TODO remove hardcoded number of stacks
-    stacks := make([]stack, 9)
+    numberOfStacks := (1 + len(lines[0])) / 4
+    log.Print(numberOfStacks)
+
+    stacks := make([]stack, numberOfStacks)
     stackIndex := 0
     
     for i := len(lines)-1; i >= 0; i-- {
@@ -88,8 +91,50 @@ func Part1(filename string) string {
     return result
 }
 
-func Part2(filename string) int {
-    
+func Part2(filename string) string {
+    fileContent := readInput(filename)
+    parts := strings.Split(fileContent, "\n\n")
 
-    return -1
+    lines := strings.Split(parts[0], "\n")
+    lines = lines[:len(lines)-1]
+
+    numberOfStacks := (1 + len(lines[0])) / 4
+
+    stacks := make([]stack, numberOfStacks)
+    stackIndex := 0
+    
+    for i := len(lines)-1; i >= 0; i-- {
+        line := lines[i]
+        for j := 1; j < len(line); j += 4 {
+            if line[j] != ' ' {
+                stacks[stackIndex].push(rune(line[j]))
+            }
+            stackIndex += 1
+        }
+        stackIndex = 0
+    }
+
+    moves := strings.Split(parts[1], "\n")
+    
+    for _, move := range moves {
+        var amount, from, to int
+        fmt.Sscanf(move, "move %d from %d to %d", &amount, &from, &to)  
+
+        var poppedContainers []rune
+
+        for i := amount; i > 0; i-- {
+            poppedContainers = append(poppedContainers, stacks[from-1].pop()) 
+        }
+
+        for j := amount; j > 0; j-- {
+            stacks[to-1].push(poppedContainers[j-1])
+        }
+    } 
+
+    var result string
+    for _, s := range stacks {
+       result += string(s.top())
+    }
+
+    return result 
 }
