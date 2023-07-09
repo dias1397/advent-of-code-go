@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
@@ -26,15 +25,19 @@ func (s stack) top() rune {
 }
 
 func main() {
-    fmt.Print("Advent of code 2022 - Day 5\n\n")
+    fmt.Print("--- Day 5: Supply Stacks ---\n\n")
 
     if len(os.Args) > 1 {
-        input := readInput(os.Args[1])
-        fmt.Fprintf(os.Stdout, "Part 1 solution: %s\n", Part1(input))
+        input, err := os.ReadFile(os.Args[1]) 
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Unable to read file named %s", os.Args[1])
+            os.Exit(-1)
+        }
 
-        fmt.Fprintf(os.Stdout, "Part 2 solution: %s\n", Part2(input))
+        fmt.Fprintf(os.Stdout, "Part1 solution: %s\n", Part1(string(input)))
+        fmt.Fprintf(os.Stdout, "Part2 solution: %s\n", Part2(string(input)))
     } else {
-        fmt.Fprintf(os.Stderr, "Input file not provided") 
+        fmt.Fprintf(os.Stderr, "Input file not provided")
     }
 }
 
@@ -55,7 +58,6 @@ func Part1(input string) string {
     lines = lines[:len(lines)-1]
 
     numberOfStacks := (1 + len(lines[0])) / 4
-    log.Print(numberOfStacks)
 
     stacks := make([]stack, numberOfStacks)
     stackIndex := 0

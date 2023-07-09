@@ -8,26 +8,20 @@ import (
 )
 
 func main() {
-    fmt.Print("Advent of code 2022 - Day 4\n\n")
+    fmt.Print("--- Day 4: Camp Cleanup ---\n\n")
 
     if len(os.Args) > 1 {
-        input := readInput(os.Args[1])
-        fmt.Fprintf(os.Stdout, "Part 1 solution: %d\n", Part1(input))
+        input, err := os.ReadFile(os.Args[1]) 
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Unable to read file named %s", os.Args[1])
+            os.Exit(-1)
+        }
 
-        fmt.Fprintf(os.Stdout, "Part 2 solution: %d\n", Part2(input))
+        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(string(input)))
+        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(string(input)))
     } else {
-        fmt.Fprintf(os.Stderr, "Input file not provided") 
+        fmt.Fprintf(os.Stderr, "Input file not provided")
     }
-}
-
-func readInput(filename string) string {
-    fileContentByteSlice, err := os.ReadFile(filename)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Unable to read file named %s\n", filename)
-        os.Exit(-1)
-    }
-
-    return string(fileContentByteSlice)
 }
 
 func Part1(input string) int {
