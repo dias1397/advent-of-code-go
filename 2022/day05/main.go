@@ -29,9 +29,10 @@ func main() {
     fmt.Print("Advent of code 2022 - Day 5\n\n")
 
     if len(os.Args) > 1 {
-        fmt.Fprintf(os.Stdout, "Part 1 solution: %s\n", Part1(os.Args[1]))
+        input := readInput(os.Args[1])
+        fmt.Fprintf(os.Stdout, "Part 1 solution: %s\n", Part1(input))
 
-        fmt.Fprintf(os.Stdout, "Part 2 solution: %s\n", Part2(os.Args[1]))
+        fmt.Fprintf(os.Stdout, "Part 2 solution: %s\n", Part2(input))
     } else {
         fmt.Fprintf(os.Stderr, "Input file not provided") 
     }
@@ -47,9 +48,8 @@ func readInput(filename string) string {
     return string(fileContentByteSlice)
 }
 
-func Part1(filename string) string {
-    fileContent := readInput(filename)
-    parts := strings.Split(fileContent, "\n\n")
+func Part1(input string) string {
+    parts := strings.Split(input, "\n\n")
 
     lines := strings.Split(parts[0], "\n")
     lines = lines[:len(lines)-1]
@@ -91,9 +91,8 @@ func Part1(filename string) string {
     return result
 }
 
-func Part2(filename string) string {
-    fileContent := readInput(filename)
-    parts := strings.Split(fileContent, "\n\n")
+func Part2(input string) string {
+    parts := strings.Split(input, "\n\n")
 
     lines := strings.Split(parts[0], "\n")
     lines = lines[:len(lines)-1]

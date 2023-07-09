@@ -10,9 +10,10 @@ func main() {
     fmt.Print("Advent of Code 2022 - Day1\n\n")
 
     if len(os.Args) > 1 {
-        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(os.Args[1]))
+        input := readInput(os.Args[1])
+        fmt.Fprintf(os.Stdout, "Part1 solution: %d\n", Part1(input))
 
-        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(os.Args[1]))
+        fmt.Fprintf(os.Stdout, "Part2 solution: %d\n", Part2(input))
     } else {
         fmt.Fprintf(os.Stderr, "Input file not provided")
     }
@@ -28,14 +29,13 @@ func readInput(filename string) string {
     return string(fileContentByteSlice)
 }
 
-func Part1(filename string) int {
-    fileContent := readInput(filename)
+func Part1(input string) int {
     result := 0
 
     scores := map[string]int{"X": 1, "Y": 2, "Z": 3, 
                              "A": 1, "B": 2, "C": 3}
 
-    for _, line := range strings.Split(fileContent, "\n") {
+    for _, line := range strings.Split(input, "\n") {
         if line == "" {
             continue
         }
@@ -54,14 +54,13 @@ func Part1(filename string) int {
     return result
 }
 
-func Part2(filename string) int {
-    fileContent := readInput(filename)
+func Part2(input string) int {
     result := 0
 
     scores := map[string]int{"X": 0, "Y": 3, "Z": 6, 
                              "A": 1, "B": 2, "C": 3}
 
-    for _, line := range strings.Split(fileContent, "\n") {
+    for _, line := range strings.Split(input, "\n") {
         if line == "" {
             continue
         }
