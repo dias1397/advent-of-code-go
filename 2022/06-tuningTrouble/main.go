@@ -23,7 +23,7 @@ func main() {
     }
 }
 
-func hasDuplicates(slice [4]string) bool {
+func hasDuplicates(slice []string) bool {
     for i, item := range slice {
         for j, itemToCompare := range slice {
             if item == itemToCompare && i != j {
@@ -37,17 +37,12 @@ func hasDuplicates(slice [4]string) bool {
 
 func Part1(input string) int {
     letters := strings.Split(input, "")
+    markers := make([]string, 4)
 
-    markers := [4]string{
-        letters[0],
-        letters[1],
-        letters[2],
-    }
-
-    for i := 3; i < len(letters); i ++ {
+    for i := 0; i < len(letters); i ++ {
         markers[i % 4] = letters[i]  
 
-        if !hasDuplicates(markers) {
+        if !hasDuplicates(markers) && i >= 3 {
             return i + 1
         }
     }
@@ -56,6 +51,16 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
+    letters := strings.Split(input, "")
+    markers := make([]string, 14)
+
+    for i := 0; i < len(letters); i ++ {
+        markers[i % 14] = letters[i]  
+
+        if !hasDuplicates(markers) && i >= 13 {
+            return i + 1
+        }
+    }
 
     return -1 
 }
