@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/dias1397/advent-of-code-go/2022/utils"
 )
 
 func TestPart1(t *testing.T) {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -26,7 +25,10 @@ func main() {
 }
 
 func Part1(input string) int {
-	var treeMap [5][5]int
+    size := len(strings.Split(input, "\n"))
+
+	var treeMap [3000][3000]int
+    var result [3000][3000]int
 
 	for i, row := range strings.Split(input, "\n") {
 		for j, tree := range strings.Split(row, "") {
@@ -39,9 +41,66 @@ func Part1(input string) int {
 		}
 	}
 
-	log.Printf("%v", treeMap)
+    for i := 0; i < size; i++ {
+        for j := 0; j < size; j++ {
+            if j-1 < 0 || treeMap[i][j] > treeMap[i][j-1]{
+                result[i][j] = 1
+            } else {
+                if treeMap[i][j] != treeMap[i][j-1] {
+                    break
+                }
+            }
+        }
+    }
 
-	return -1
+    for i := 0; i < size; i++ {
+        for j := size-1; j >= 0; j-- {
+            if j+1 > size-1 || treeMap[i][j] > treeMap[i][j+1]{
+                result[i][j] = 1
+            } else {
+                if treeMap[i][j] != treeMap[i][j+1] {
+                    break
+                }
+            }
+        }
+    }
+
+    for i := 0; i < size; i++ {
+        for j := 0; j < size; j++ {
+            if j-1 < 0 || treeMap[j][i] > treeMap[j-1][i]{
+                result[j][i] = 1
+            } else {
+                if treeMap[i][j] != treeMap[j-1][i] {
+                    break
+                }
+            }
+        }
+    }
+
+    for i := 0; i < size; i++ {
+        for j := size-1; j >= 0; j-- {
+            if j+1 > size-1 || treeMap[j][i] > treeMap[j+1][i]{
+                result[j][i] = 1
+            } else {
+                if treeMap[i][j] != treeMap[j+1][i] {
+                    break
+                }
+            }
+        }
+    }
+
+    sum := 0
+    for row := 0; row < size; row++ {
+        for column := 0; column < size; column++ {
+            fmt.Fprintf(os.Stdout, "%d", result[row][column])
+            if result[row][column] == 1 {
+                sum += 1
+            }
+        }
+        fmt.Fprintf(os.Stdout, "\n")
+    }
+
+	return sum 
 }
 
 func Part2(input string) int {
