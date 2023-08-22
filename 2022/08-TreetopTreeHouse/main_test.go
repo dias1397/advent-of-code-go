@@ -13,7 +13,7 @@ func TestPart1(t *testing.T) {
 		want  int
 	}{
 		{"Part1 sample", testutil.ReadInput(t, "./testdata/sample.txt"), 21},
-		{"Part1 exercise", testutil.ReadInput(t, "./testdata/exercise.txt"), -1},
+		{"Part1 exercise", testutil.ReadInput(t, "./testdata/exercise.txt"), 1782},
 	}
 
 	for _, tt := range tests {

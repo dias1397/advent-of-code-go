@@ -25,66 +25,51 @@ func main() {
 }
 
 func Part1(input string) int {
+    input = strings.TrimSuffix(input, "\n")
     size := len(strings.Split(input, "\n"))
 
-	var treeMap [3000][3000]int
-    var result [3000][3000]int
+    treeMatrix := make([][]int, size)
+    visibilityMatrix := make([][]int, size)
 
 	for i, row := range strings.Split(input, "\n") {
+        treeMatrix[i] = make([]int, size)
+        visibilityMatrix[i] = make([]int, size)
+
 		for j, tree := range strings.Split(row, "") {
 			height, err := strconv.Atoi(tree)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Unable to parse tree height: %v", err)
 				os.Exit(-1)
 			}
-			treeMap[i][j] = height
+			treeMatrix[i][j] = height
 		}
 	}
 
     for i := 0; i < size; i++ {
+        rightDirectionBound := -1 
+        leftDirectionBound := -1 
+        downDirectionBound := -1 
+        upDirectionBound := -1 
+
         for j := 0; j < size; j++ {
-            if j-1 < 0 || treeMap[i][j] > treeMap[i][j-1]{
-                result[i][j] = 1
-            } else {
-                if treeMap[i][j] != treeMap[i][j-1] {
-                    break
-                }
+            if treeMatrix[i][j] > rightDirectionBound {
+                visibilityMatrix[i][j] = 1               
+                rightDirectionBound = treeMatrix[i][j]
             }
-        }
-    }
 
-    for i := 0; i < size; i++ {
-        for j := size-1; j >= 0; j-- {
-            if j+1 > size-1 || treeMap[i][j] > treeMap[i][j+1]{
-                result[i][j] = 1
-            } else {
-                if treeMap[i][j] != treeMap[i][j+1] {
-                    break
-                }
+            if treeMatrix[i][size-1-j] > leftDirectionBound {
+                visibilityMatrix[i][size-1-j] = 1               
+                leftDirectionBound = treeMatrix[i][size-1-j]
             }
-        }
-    }
 
-    for i := 0; i < size; i++ {
-        for j := 0; j < size; j++ {
-            if j-1 < 0 || treeMap[j][i] > treeMap[j-1][i]{
-                result[j][i] = 1
-            } else {
-                if treeMap[i][j] != treeMap[j-1][i] {
-                    break
-                }
+            if treeMatrix[j][i] > downDirectionBound {
+                visibilityMatrix[j][i] = 1               
+                downDirectionBound = treeMatrix[j][i]
             }
-        }
-    }
 
-    for i := 0; i < size; i++ {
-        for j := size-1; j >= 0; j-- {
-            if j+1 > size-1 || treeMap[j][i] > treeMap[j+1][i]{
-                result[j][i] = 1
-            } else {
-                if treeMap[i][j] != treeMap[j+1][i] {
-                    break
-                }
+            if treeMatrix[size-1-j][i] > upDirectionBound {
+                visibilityMatrix[size-1-j][i] = 1               
+                upDirectionBound = treeMatrix[size-1-j][i]
             }
         }
     }
@@ -92,12 +77,10 @@ func Part1(input string) int {
     sum := 0
     for row := 0; row < size; row++ {
         for column := 0; column < size; column++ {
-            fmt.Fprintf(os.Stdout, "%d", result[row][column])
-            if result[row][column] == 1 {
+            if visibilityMatrix[row][column] == 1 {
                 sum += 1
             }
         }
-        fmt.Fprintf(os.Stdout, "\n")
     }
 
 	return sum 
