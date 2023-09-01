@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+const (
+    VIEWING_UP      = 0
+    VIEWING_DOWN    = 1
+    VIEWING_LEFT    = 2
+    VIEWING_RIGHT   = 3
+)
+
 func main() {
 	fmt.Print("--- Day 8: Treetop Tree House ---\n\n")
 
@@ -85,10 +92,10 @@ func Part2(input string) int {
     result := -1
     for i := 0; i < size; i++ {
         for j := 0; j < size; j++ {
-            currentTreeViewValue := calculateViewUp(treeMatrix, i-1, j, treeMatrix[i][j])
-            currentTreeViewValue *= calculateViewDown(treeMatrix, i+1, j, treeMatrix[i][j])
-            currentTreeViewValue *= calculateViewLeft(treeMatrix, i, j-1, treeMatrix[i][j])
-            currentTreeViewValue *= calculateViewRight(treeMatrix, i, j+1, treeMatrix[i][j])
+            currentTreeViewValue := calculateViewScore(treeMatrix, i-1, j, treeMatrix[i][j], VIEWING_UP)
+            currentTreeViewValue *= calculateViewScore(treeMatrix, i+1, j, treeMatrix[i][j], VIEWING_DOWN)
+            currentTreeViewValue *= calculateViewScore(treeMatrix, i, j-1, treeMatrix[i][j], VIEWING_LEFT)
+            currentTreeViewValue *= calculateViewScore(treeMatrix, i, j+1, treeMatrix[i][j], VIEWING_RIGHT)
 
             if currentTreeViewValue > result {
                 result = currentTreeViewValue
@@ -99,49 +106,26 @@ func Part2(input string) int {
 	return result 
 }
 
-func calculateViewUp(forest [][]int, i, j, treeHeight int) int {
-    if i < 0 {
+func calculateViewScore(forest [][]int, row, column, treeHeight int, viewDirection int) int {
+    if row < 0 || column < 0 || row > len(forest)-1 || column > len(forest)-1 {
         return 0
     }
 
-    if ( treeHeight <= forest[i][j] ) {
-        return 1
+    if treeHeight <= forest[row][column] {
+        return 1 
     } else {
-        return 1 + calculateViewUp(forest, i-1, j, treeHeight)
-    }
-}
-
-func calculateViewDown(forest [][]int, i, j, treeHeight int) int {
-    if i > len(forest)-1 {
-        return 0
-    }
-
-    if ( treeHeight <= forest[i][j] ) {
-        return 1
-    } else {
-        return 1 + calculateViewDown(forest, i+1, j, treeHeight)
-    }
-}
-func calculateViewLeft(forest [][]int, i, j, treeHeight int) int {
-    if j < 0 {
-        return 0 
-    }
-
-    if ( treeHeight <= forest[i][j] ) {
-        return 1
-    } else {
-        return 1 + calculateViewLeft(forest, i, j-1, treeHeight)
-    }
-}
-func calculateViewRight(forest [][]int, i, j, treeHeight int) int {
-    if j > len(forest)-1 {
-        return 0 
-    }
-
-    if ( treeHeight <= forest[i][j] ) {
-        return 1
-    } else {
-        return 1 + calculateViewRight(forest, i, j+1, treeHeight)
+        switch viewDirection {
+            case VIEWING_UP:
+                return 1 + calculateViewScore(forest, row-1, column, treeHeight, VIEWING_UP)    
+            case VIEWING_DOWN:
+                return 1 + calculateViewScore(forest, row+1, column, treeHeight, VIEWING_DOWN)
+            case VIEWING_LEFT:
+                return 1 + calculateViewScore(forest, row, column-1, treeHeight, VIEWING_LEFT)
+            case VIEWING_RIGHT:
+                return 1 + calculateViewScore(forest, row, column+1, treeHeight, VIEWING_RIGHT)
+            default:
+                return 0
+        }
     }
 }
 
