@@ -26,24 +26,14 @@ func main() {
 
 func Part1(input string) int {
     input = strings.TrimSuffix(input, "\n")
-    size := len(strings.Split(input, "\n"))
+    treeMatrix := buildTreeMatrix(input)
 
-    treeMatrix := make([][]int, size)
+    size := len(treeMatrix)
+
     visibilityMatrix := make([][]int, size)
-
-	for i, row := range strings.Split(input, "\n") {
-        treeMatrix[i] = make([]int, size)
-        visibilityMatrix[i] = make([]int, size)
-
-		for j, tree := range strings.Split(row, "") {
-			height, err := strconv.Atoi(tree)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Unable to parse tree height: %v", err)
-				os.Exit(-1)
-			}
-			treeMatrix[i][j] = height
-		}
-	}
+    for i := 0; i < size; i++ {
+       visibilityMatrix[i] = make([]int, size) 
+    }
 
     for i := 0; i < size; i++ {
         rightDirectionBound := -1 
@@ -87,6 +77,90 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
+    input = strings.TrimSuffix(input, "\n")
+    treeMatrix := buildTreeMatrix(input)
 
-	return -1
+    size := len(treeMatrix)
+
+    result := -1
+    for i := 0; i < size; i++ {
+        for j := 0; j < size; j++ {
+            currentTreeViewValue := calculateViewUp(treeMatrix, i-1, j, treeMatrix[i][j])
+            currentTreeViewValue *= calculateViewDown(treeMatrix, i+1, j, treeMatrix[i][j])
+            currentTreeViewValue *= calculateViewLeft(treeMatrix, i, j-1, treeMatrix[i][j])
+            currentTreeViewValue *= calculateViewRight(treeMatrix, i, j+1, treeMatrix[i][j])
+
+            if currentTreeViewValue > result {
+                result = currentTreeViewValue
+            }
+        }
+    }
+
+	return result 
+}
+
+func calculateViewUp(forest [][]int, i, j, treeHeight int) int {
+    if i < 0 {
+        return 0
+    }
+
+    if ( treeHeight <= forest[i][j] ) {
+        return 1
+    } else {
+        return 1 + calculateViewUp(forest, i-1, j, treeHeight)
+    }
+}
+
+func calculateViewDown(forest [][]int, i, j, treeHeight int) int {
+    if i > len(forest)-1 {
+        return 0
+    }
+
+    if ( treeHeight <= forest[i][j] ) {
+        return 1
+    } else {
+        return 1 + calculateViewDown(forest, i+1, j, treeHeight)
+    }
+}
+func calculateViewLeft(forest [][]int, i, j, treeHeight int) int {
+    if j < 0 {
+        return 0 
+    }
+
+    if ( treeHeight <= forest[i][j] ) {
+        return 1
+    } else {
+        return 1 + calculateViewLeft(forest, i, j-1, treeHeight)
+    }
+}
+func calculateViewRight(forest [][]int, i, j, treeHeight int) int {
+    if j > len(forest)-1 {
+        return 0 
+    }
+
+    if ( treeHeight <= forest[i][j] ) {
+        return 1
+    } else {
+        return 1 + calculateViewRight(forest, i, j+1, treeHeight)
+    }
+}
+
+func buildTreeMatrix(input string) [][]int {
+    size := len(strings.Split(input, "\n"))
+    treeMatrix := make([][]int, size)
+
+	for i, row := range strings.Split(input, "\n") {
+        treeMatrix[i] = make([]int, size)
+
+		for j, tree := range strings.Split(row, "") {
+			height, err := strconv.Atoi(tree)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Unable to parse tree height: %v", err)
+				os.Exit(-1)
+			}
+			treeMatrix[i][j] = height
+		}
+	}
+
+    return treeMatrix
 }
