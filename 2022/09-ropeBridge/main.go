@@ -43,8 +43,8 @@ func Part1(input string) int {
         }
 
         for i := 0; i < numberOfMovements; i++ {
-            moveRope(&headPosition, directionOfMovement)    
-            moveTail(&tailPosition, headPosition, directionOfMovement)
+            moveEdgeOfRope(&headPosition, directionOfMovement)    
+            adjustRopeTailPosition(&tailPosition, headPosition, directionOfMovement)
 
             position := fmt.Sprint(tailPosition[0], tailPosition[1])
             ropePositionsVisited[position] = true
@@ -59,7 +59,7 @@ func Part2(input string) int {
     return -1 
 }
 
-func moveRope(ropePosition *[2]int, directionOfMovement string) {
+func moveEdgeOfRope(ropePosition *[2]int, directionOfMovement string) {
     switch directionOfMovement {
     case "R":
         ropePosition[1] += 1
@@ -76,7 +76,7 @@ func moveRope(ropePosition *[2]int, directionOfMovement string) {
     }
 }
 
-func moveTail(tailPosition *[2]int, headPosition [2]int, directionOfMovement string) {
+func adjustRopeTailPosition(tailPosition *[2]int, headPosition [2]int, directionOfMovement string) {
     columnDifference := headPosition[0] - tailPosition[0]
     rowDifference := headPosition[1] - tailPosition[1]
 
@@ -86,25 +86,25 @@ func moveTail(tailPosition *[2]int, headPosition [2]int, directionOfMovement str
     }
 
     if columnDifference == 0 || rowDifference == 0 {
-        moveRope(tailPosition, directionOfMovement) 
+        moveEdgeOfRope(tailPosition, directionOfMovement) 
         return
     }
 
-    moveRope(tailPosition, directionOfMovement)    
+    moveEdgeOfRope(tailPosition, directionOfMovement)    
     if columnDifference == 1 {
-        moveRope(tailPosition, "U") 
+        moveEdgeOfRope(tailPosition, "U") 
         return
     }
     if columnDifference == -1 {
-        moveRope(tailPosition, "D") 
+        moveEdgeOfRope(tailPosition, "D") 
         return
     }
     if rowDifference == 1 {
-        moveRope(tailPosition, "R") 
+        moveEdgeOfRope(tailPosition, "R") 
         return
     }
     if rowDifference == -1 {
-        moveRope(tailPosition, "L") 
+        moveEdgeOfRope(tailPosition, "L") 
         return
     }
 }
