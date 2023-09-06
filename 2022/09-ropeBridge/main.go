@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-    fmt.Print("--- Day X: TEMPLATE ---\n\n")
+    fmt.Print("--- Day 9: TEMPLATE ---\n\n")
 
     if len(os.Args) > 1 {
         input, err := os.ReadFile(os.Args[1]) 
@@ -25,9 +25,11 @@ func main() {
 }
 
 func Part1(input string) int {
+    input = strings.TrimSuffix(input, "\n")
+
     headPosition := [2]int{0, 0}
     tailPosition := [2]int{0, 0}
-    ropePositionsVisited := make([]string, 0)
+    ropePositionsVisited := make(map[string]bool)
     movements := strings.Split(input, "\n")
 
     for _, movement := range movements {
@@ -41,17 +43,68 @@ func Part1(input string) int {
         }
 
         for i := 0; i < numberOfMovements; i++ {
-            moveHead(headPosition, directionOfMovement)    
-            moveTail(tailPosition, headPosition)
+            moveRope(&headPosition, directionOfMovement)    
+            moveTail(&tailPosition, headPosition, directionOfMovement)
 
-            addPositionToVisitedSet(tailPosition)
+            position := fmt.Sprint(tailPosition[0], tailPosition[1])
+            ropePositionsVisited[position] = true
         }
     }
 
-    return -1 
+    return len(ropePositionsVisited)
 }
 
 func Part2(input string) int {
 
     return -1 
+}
+
+func moveRope(ropePosition *[2]int, directionOfMovement string) {
+    switch directionOfMovement {
+    case "R":
+        ropePosition[1] += 1
+        break;
+    case "L":
+        ropePosition[1] -= 1
+        break;
+    case "U":
+        ropePosition[0] += 1
+        break;
+    case "D":
+        ropePosition[0] -= 1
+        break;
+    }
+}
+
+func moveTail(tailPosition *[2]int, headPosition [2]int, directionOfMovement string) {
+    columnDifference := headPosition[0] - tailPosition[0]
+    rowDifference := headPosition[1] - tailPosition[1]
+
+    if columnDifference <= 1 && columnDifference >= -1 && 
+        rowDifference <= 1 && rowDifference >= -1 {
+        return 
+    }
+
+    if columnDifference == 0 || rowDifference == 0 {
+        moveRope(tailPosition, directionOfMovement) 
+        return
+    }
+
+    moveRope(tailPosition, directionOfMovement)    
+    if columnDifference == 1 {
+        moveRope(tailPosition, "U") 
+        return
+    }
+    if columnDifference == -1 {
+        moveRope(tailPosition, "D") 
+        return
+    }
+    if rowDifference == 1 {
+        moveRope(tailPosition, "R") 
+        return
+    }
+    if rowDifference == -1 {
+        moveRope(tailPosition, "L") 
+        return
+    }
 }
