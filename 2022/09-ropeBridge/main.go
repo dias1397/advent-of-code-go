@@ -60,8 +60,36 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
+    input = strings.TrimSuffix(input, "\n")
 
-    return -1 
+    ropeKnotsPositions := make([]point, 10)
+    tailPositionVisited := make(map[point]bool)
+
+    movements := strings.Split(input, "\n")
+
+    for _, movement := range movements {
+        movementInstructions := strings.Split(movement, " ")
+
+        directionOfMovement := movementInstructions[0]
+        numberOfMovements, err := strconv.Atoi(movementInstructions[1])
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error while parsing number of movements: %v", err) 
+            os.Exit(-1)
+        }
+
+        for i := 0; i < numberOfMovements; i++ {
+            moveRopeHead(&ropeKnotsPositions[0], directionOfMovement)
+
+            for j := 1; j < 10; j++ {
+                adjustRopeTail(&ropeKnotsPositions[j], ropeKnotsPositions[j-1])
+            }
+
+            tailPositionVisited[ropeKnotsPositions[9]] = true
+        }
+    }
+
+
+    return len(tailPositionVisited) 
 }
 
 func moveRopeHead(ropePosition *point, directionOfMovement string) {
