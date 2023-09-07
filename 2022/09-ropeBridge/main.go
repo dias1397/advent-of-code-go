@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
 )
+
+type point struct {
+    x, y int
+}
 
 func main() {
     fmt.Print("--- Day 9: TEMPLATE ---\n\n")
@@ -27,9 +32,10 @@ func main() {
 func Part1(input string) int {
     input = strings.TrimSuffix(input, "\n")
 
-    headPosition := [2]int{0, 0}
-    tailPosition := [2]int{0, 0}
-    ropePositionsVisited := make(map[string]bool)
+    headPosition := point{0, 0}
+    tailPosition := point{0, 0}
+    tailPositionVisited := make(map[point]bool)
+
     movements := strings.Split(input, "\n")
 
     for _, movement := range movements {
@@ -43,15 +49,14 @@ func Part1(input string) int {
         }
 
         for i := 0; i < numberOfMovements; i++ {
-            moveEdgeOfRope(&headPosition, directionOfMovement)    
-            adjustRopeTailPosition(&tailPosition, headPosition, directionOfMovement)
+            moveRopeHead(&headPosition, directionOfMovement)
+            adjustRopeTail(&tailPosition, headPosition)
 
-            position := fmt.Sprint(tailPosition[0], tailPosition[1])
-            ropePositionsVisited[position] = true
+            tailPositionVisited[tailPosition] = true
         }
     }
 
-    return len(ropePositionsVisited)
+    return len(tailPositionVisited)
 }
 
 func Part2(input string) int {
@@ -59,52 +64,30 @@ func Part2(input string) int {
     return -1 
 }
 
-func moveEdgeOfRope(ropePosition *[2]int, directionOfMovement string) {
+func moveRopeHead(ropePosition *point, directionOfMovement string) {
     switch directionOfMovement {
-    case "R":
-        ropePosition[1] += 1
-        break;
-    case "L":
-        ropePosition[1] -= 1
-        break;
     case "U":
-        ropePosition[0] += 1
-        break;
+        (*ropePosition).x += 1
     case "D":
-        ropePosition[0] -= 1
-        break;
+        (*ropePosition).x -= 1
+    case "R":
+        (*ropePosition).y += 1
+    case "L":
+        (*ropePosition).y -= 1
     }
 }
 
-func adjustRopeTailPosition(tailPosition *[2]int, headPosition [2]int, directionOfMovement string) {
-    columnDifference := headPosition[0] - tailPosition[0]
-    rowDifference := headPosition[1] - tailPosition[1]
+func adjustRopeTail(tailPosition *point, headPosition point) {
+    rowDifference := float64(headPosition.x - (*tailPosition).x)
+    columnDifference := float64(headPosition.y - (*tailPosition).y)
 
-    if columnDifference <= 1 && columnDifference >= -1 && 
-        rowDifference <= 1 && rowDifference >= -1 {
-        return 
-    }
-
-    if columnDifference == 0 || rowDifference == 0 {
-        moveEdgeOfRope(tailPosition, directionOfMovement) 
-        return
+    if math.Abs(rowDifference) == 2 ||
+        (math.Abs(rowDifference) == 1 && math.Abs(columnDifference) == 2) {
+        (*tailPosition).x += int(rowDifference) / int(math.Abs(rowDifference))
     }
 
-    moveEdgeOfRope(tailPosition, directionOfMovement)    
-    if columnDifference == 1 {
-        moveEdgeOfRope(tailPosition, "U") 
-        return
-    }
-    if columnDifference == -1 {
-        moveEdgeOfRope(tailPosition, "D") 
-        return
-    }
-    if rowDifference == 1 {
-        moveEdgeOfRope(tailPosition, "R") 
-        return
-    }
-    if rowDifference == -1 {
-        moveEdgeOfRope(tailPosition, "L") 
-        return
+    if math.Abs(columnDifference) == 2 ||
+        (math.Abs(columnDifference) == 1 && math.Abs(rowDifference) == 2) {
+        (*tailPosition).y += int(columnDifference) / int(math.Abs(columnDifference))
     }
 }
