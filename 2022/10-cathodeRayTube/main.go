@@ -37,23 +37,16 @@ func Part1(input string) int {
         instruction := strings.Split(line, " ") 
 
         cpu.cycle++
-
-        _, ok := registerValues[cpu.cycle]
-        if ok {
-            registerValues[cpu.cycle] = cpu.cycle * cpu.register 
-        }
+        updateRegisterValues(registerValues, cpu)
         
         if instruction[0] == "addx" {
             cpu.cycle++
+            updateRegisterValues(registerValues, cpu)
 
             value, err := strconv.Atoi(instruction[1])
             if err != nil {
                 fmt.Fprintf(os.Stderr, "Error while converting: %v", instruction[1]) 
-            }
-
-            _, ok := registerValues[cpu.cycle]
-            if ok {
-                registerValues[cpu.cycle] = cpu.cycle * cpu.register 
+                return -1
             }
 
             cpu.register += value 
@@ -71,4 +64,11 @@ func Part1(input string) int {
 func Part2(input string) int {
 
     return -1 
+}
+
+func updateRegisterValues (registerValues map[int]int, cpu cpu) {
+    _, ok := registerValues[cpu.cycle]
+    if ok {
+        registerValues[cpu.cycle] = cpu.cycle * cpu.register 
+    }
 }
