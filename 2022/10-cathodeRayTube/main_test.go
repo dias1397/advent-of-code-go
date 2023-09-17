@@ -31,10 +31,10 @@ func TestPart2(t *testing.T) {
     var tests = []struct{
         name string
         input string
-        want int
+        want string
     } {
-        {"Part2 sample", testutil.ReadInput(t, "./testdata/sample.txt"), -1},
-        {"Part2 exercise", testutil.ReadInput(t, "./testdata/exercise.txt"), -1},
+        {"Part2 sample", testutil.ReadInput(t, "./testdata/sample.txt"), testutil.ReadInput(t, "./testdata/sampleSolution.txt")},
+        {"Part2 exercise", testutil.ReadInput(t, "./testdata/exercise.txt"), testutil.ReadInput(t, "./testdata/exerciseSolution.txt")},
     }
 
     for _, tt := range tests {
@@ -42,7 +42,7 @@ func TestPart2(t *testing.T) {
             ans := Part2(tt.input)
 
             if ans != tt.want{
-                t.Errorf("Part2 = %d; want %d", ans, tt.want)
+                t.Errorf("Part2 = %s; want %s", ans, tt.want)
             }
         })
     }
