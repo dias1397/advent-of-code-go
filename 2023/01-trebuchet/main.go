@@ -53,5 +53,11 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return -1
+    digitsAsStrings := [9]string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+
+    for index, word := range digitsAsStrings{
+        input = strings.ReplaceAll(input, word, word + strconv.Itoa(index + 1) + word) 
+    }
+
+	return Part1(input) 
 }
