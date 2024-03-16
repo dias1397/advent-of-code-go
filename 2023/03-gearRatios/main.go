@@ -24,115 +24,96 @@ func main() {
 	}
 }
 
-func Part1(input string) int {
-	input = strings.TrimSuffix(input, "\n")
-	result := 0
+func buildMatrix(input string) [][]string {
+	lines := strings.Split(input, "\n")
+	matrix := make([][]string, len(lines))
 
-	matrix := make([][]string, len(strings.Split(input, "\n")))
-	for i, line := range strings.Split(input, "\n") {
-		matrix[i] = make([]string, len(strings.Split(line, "")))
-		for j, value := range strings.Split(line, "") {
-			matrix[i][j] = value
+	for row, line := range lines {
+		characters := strings.Split(line, "")
+		matrix[row] = make([]string, len(characters))
+
+		for column, character := range characters {
+			matrix[row][column] = character
 		}
 	}
 
+	return matrix
+}
+
+func isDigit(value string) bool {
+	return value >= "0" && value <= "9"
+}
+
+func isSymbol(value string) bool {
+	return value != "." && !isDigit(value)
+}
+
+func hasSymbolAroundNumber(start, end, rowIndex int, matrix [][]string) bool {
+	height := len(matrix)
+	width := len(matrix[rowIndex])
+
+	// looks for symbol on left edge of number
+	if start >= 0 && isSymbol(matrix[rowIndex][start]) {
+		return true
+	}
+
+	// looks for symbol on right edge of number
+	if end < width && isSymbol(matrix[rowIndex][end]) {
+		return true
+	}
+
+	// looks for symbol on top and bottom row of number
+	for column := start; column <= end; column++ {
+		if column >= 0 && column < width {
+			if rowIndex-1 >= 0 && isSymbol(matrix[rowIndex-1][column]) {
+				return true
+			}
+
+			if rowIndex+1 < height && isSymbol(matrix[rowIndex+1][column]) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func Part1(input string) (result int) {
+	input = strings.TrimSuffix(input, "\n")
+	matrix := buildMatrix(input)
+
 	number := ""
-	startCoord := -1
-	endCoord := -1
+	startPos := -1
+	endPos := -1
 
-	for x := 0; x < len(matrix); x++ {
-		for y := 0; y < len(matrix[x]); y++ {
-			if isDigit(matrix[x][y]) && number == "" {
-				number += matrix[x][y]
-				startCoord = y - 1
-				endCoord = y + 1
-				continue
+	for row := 0; row < len(matrix); row++ {
+		for column := 0; column < len(matrix[row]); column++ {
+			if isDigit(matrix[row][column]) {
+				if number == "" {
+					startPos = column - 1
+				}
+				endPos = column + 1
+				number += matrix[row][column]
 			}
 
-			if isDigit(matrix[x][y]) && number != "" {
-				number += matrix[x][y]
-				endCoord = y + 1
-			}
-
-			if (!isDigit(matrix[x][y]) || y == len(matrix[x])-1) && number != "" {
-				symbol := ""
-				detectedSymbol := false
-				if startCoord >= 0 && matrix[x][startCoord] != "." {
-					if !isDigit(matrix[x][startCoord]) {
-						detectedSymbol = true
-						symbol += matrix[x][startCoord]
-					}
-				}
-				if endCoord < len(matrix[x]) && matrix[x][endCoord] != "." {
-					if !isDigit(matrix[x][endCoord]) {
-						detectedSymbol = true
-						symbol += matrix[x][endCoord]
-					}
-				}
-				for i := startCoord; i <= endCoord; i++ {
-					if i >= 0 && i < len(matrix[x]) {
-						if x-1 >= 0 && matrix[x-1][i] != "." {
-							if !isDigit(matrix[x-1][i]) {
-								detectedSymbol = true
-								symbol += matrix[x-1][i]
-							}
-						}
-						if x+1 < len(matrix[x]) && matrix[x+1][i] != "." {
-							if !isDigit(matrix[x+1][i]) {
-								detectedSymbol = true
-								symbol += matrix[x+1][i]
-							}
-						}
-					}
-				}
-
-				if detectedSymbol {
+			if (!isDigit(matrix[row][column]) || column == len(matrix[row])-1) && number != "" {
+				if hasSymbolAroundNumber(startPos, endPos, row, matrix) {
 					numberInt, err := strconv.Atoi(number)
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Not a number %v", number)
 					}
 
 					result += numberInt
-					fmt.Fprintf(os.Stdout, "Part number: %d -> %v\n", numberInt, symbol)
-					if numberInt == 392 {
-						fmt.Fprintf(os.Stdout, "%v\n%v\n%v", matrix[x-1], matrix[x], matrix[x+1])
-					}
 				}
 
 				number = ""
-				startCoord = -1
-				endCoord = -1
+				startPos = -1
+				endPos = -1
 			}
-
 		}
 	}
 
 	return result
-}
-
-func detectSymbol(startY, endY int, currentLine []string) bool {
-	if startY <= 0 && currentLine[startY] != "." {
-		return true
-	}
-
-	if endY >= len(currentLine) && currentLine[endY] != "." {
-		return true
-	}
-
-	// TODO: validate if on top line or bottom line there is a symbol
-
-	// TODO: add number to sum
-
-	return false
-}
-
-func isDigit(value string) bool {
-	_, err := strconv.Atoi(value)
-	if err != nil {
-		return false
-	}
-
-	return true
 }
 
 func Part2(input string) int {
