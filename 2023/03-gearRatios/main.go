@@ -24,91 +24,29 @@ func main() {
 	}
 }
 
-func buildMatrix(input string) [][]string {
-	lines := strings.Split(input, "\n")
-	matrix := make([][]string, len(lines))
-
-	for row, line := range lines {
-		characters := strings.Split(line, "")
-		matrix[row] = make([]string, len(characters))
-
-		for column, character := range characters {
-			matrix[row][column] = character
-		}
-	}
-
-	return matrix
-}
-
-func isDigit(value string) bool {
-	return value >= "0" && value <= "9"
-}
-
-func isSymbol(value string) bool {
-	return value != "." && !isDigit(value)
-}
-
-func hasSymbolAroundNumber(start, end, rowIndex int, matrix [][]string) bool {
-	height := len(matrix)
-	width := len(matrix[rowIndex])
-
-	// looks for symbol on left edge of number
-	if start >= 0 && isSymbol(matrix[rowIndex][start]) {
-		return true
-	}
-
-	// looks for symbol on right edge of number
-	if end < width && isSymbol(matrix[rowIndex][end]) {
-		return true
-	}
-
-	// looks for symbol on top and bottom row of number
-	for column := start; column <= end; column++ {
-		if column >= 0 && column < width {
-			if rowIndex-1 >= 0 && isSymbol(matrix[rowIndex-1][column]) {
-				return true
-			}
-
-			if rowIndex+1 < height && isSymbol(matrix[rowIndex+1][column]) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
 func Part1(input string) (result int) {
 	input = strings.TrimSuffix(input, "\n")
 	matrix := buildMatrix(input)
 
-	number := ""
-	startPos := -1
-	endPos := -1
+	diffs := [8][2]int{
+		{-1, -1}, {-1, 0}, {-1, 1},
+		{0, -1}, {0, 1},
+		{1, -1}, {1, 0}, {1, 1},
+	}
+
+	seen := make(map[[2]int]bool)
 
 	for row := 0; row < len(matrix); row++ {
 		for column := 0; column < len(matrix[row]); column++ {
-			if isDigit(matrix[row][column]) {
-				if number == "" {
-					startPos = column - 1
-				}
-				endPos = column + 1
-				number += matrix[row][column]
-			}
+			if isSymbol(matrix[row][column]) {
+				for _, diff := range diffs {
+					searchCoords := [2]int{row + diff[0], column + diff[1]}
 
-			if (!isDigit(matrix[row][column]) || column == len(matrix[row])-1) && number != "" {
-				if hasSymbolAroundNumber(startPos, endPos, row, matrix) {
-					numberInt, err := strconv.Atoi(number)
-					if err != nil {
-						fmt.Fprintf(os.Stderr, "Not a number %v", number)
+					if !seen[searchCoords] && isDigit(matrix[searchCoords[0]][searchCoords[1]]) {
+						result += getNumber(matrix, searchCoords, seen)
 					}
-
-					result += numberInt
 				}
 
-				number = ""
-				startPos = -1
-				endPos = -1
 			}
 		}
 	}
@@ -138,7 +76,6 @@ func Part2(input string) (result int) {
 
 					if !seen[searchCoords] && isDigit(matrix[searchCoords[0]][searchCoords[1]]) {
 						numbersDetected = append(numbersDetected, getNumber(matrix, searchCoords, seen))
-
 					}
 				}
 
@@ -155,6 +92,30 @@ func Part2(input string) (result int) {
 	}
 
 	return result
+}
+
+func buildMatrix(input string) [][]string {
+	lines := strings.Split(input, "\n")
+	matrix := make([][]string, len(lines))
+
+	for row, line := range lines {
+		characters := strings.Split(line, "")
+		matrix[row] = make([]string, len(characters))
+
+		for column, character := range characters {
+			matrix[row][column] = character
+		}
+	}
+
+	return matrix
+}
+
+func isDigit(value string) bool {
+	return value >= "0" && value <= "9"
+}
+
+func isSymbol(value string) bool {
+	return value != "." && !isDigit(value)
 }
 
 func getNumber(matrix [][]string, detectedCoords [2]int, seen map[[2]int]bool) int {
