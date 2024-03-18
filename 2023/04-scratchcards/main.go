@@ -65,20 +65,18 @@ func Part2(input string) (result int) {
 	for i, game := range initialScratchcards {
 		totalScratchcards[i] += 1
 
-		for reps := 0; reps < totalScratchcards[i]; reps++ {
-			winningNumbers := strings.Split(game, " |")[0]
-			chosenNumbers := strings.Split(game, " |")[1] + " "
-			wins := 0
+		winningNumbers := strings.Split(game, " |")[0]
+		chosenNumbers := strings.Split(game, " |")[1] + " "
+		wins := 0
 
-			for _, winningNumber := range strings.Split(winningNumbers, " ") {
-				if strings.Contains(chosenNumbers, " "+winningNumber+" ") {
-					wins += 1
-				}
+		for _, winningNumber := range strings.Split(winningNumbers, " ") {
+			if strings.Contains(chosenNumbers, " "+winningNumber+" ") {
+				wins += 1
 			}
+		}
 
-			for j := 0; j < wins; j++ {
-				totalScratchcards[i+j+1] += 1
-			}
+		for j := 0; j < wins; j++ {
+			totalScratchcards[i+j+1] += totalScratchcards[i]
 		}
 	}
 
