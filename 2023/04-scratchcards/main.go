@@ -52,7 +52,39 @@ func Part1(input string) (result int) {
 	return result
 }
 
-func Part2(input string) int {
+func Part2(input string) (result int) {
+	input = strings.TrimSuffix(input, "\n")
+	input = strings.ReplaceAll(input, "  ", " ")
 
-	return -1
+	regex := regexp.MustCompile(`.*?: `)
+	input = regex.ReplaceAllString(input, "")
+
+	initialScratchcards := strings.Split(input, "\n")
+	totalScratchcards := make(map[int]int, len(initialScratchcards))
+
+	for i, game := range initialScratchcards {
+		totalScratchcards[i] += 1
+
+		for reps := 0; reps < totalScratchcards[i]; reps++ {
+			winningNumbers := strings.Split(game, " |")[0]
+			chosenNumbers := strings.Split(game, " |")[1] + " "
+			wins := 0
+
+			for _, winningNumber := range strings.Split(winningNumbers, " ") {
+				if strings.Contains(chosenNumbers, " "+winningNumber+" ") {
+					wins += 1
+				}
+			}
+
+			for j := 0; j < wins; j++ {
+				totalScratchcards[i+j+1] += 1
+			}
+		}
+	}
+
+	for _, value := range totalScratchcards {
+		result += value
+	}
+
+	return result
 }
